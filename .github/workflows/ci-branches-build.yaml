@@ -1,9 +1,7 @@
 name: CI Branches Build
 
 on:
-  push:
-    branches-ignore:
-      - master
+  pull_request:
 
 
 jobs:
