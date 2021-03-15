@@ -1,0 +1,29 @@
+name: CI Branches Build
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+    env:
+      project: 'nest-pokemon-api'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: '12'
+          registry-url: 'https://registry.npmjs.org/'
+      - name: Install dependencies
+        run: npm install
+      - name: Lint and test
+        run: |
+          npm run lint
+          npm run test:unit
+          npm run test:e2e
