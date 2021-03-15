@@ -1,4 +1,4 @@
-export interface IPokemonResponse { 
+export interface IPokemonResponse {
   next: string | null;
   previous: string | null;
   detailedResults: Array<IDetailedResult>;
@@ -19,7 +19,7 @@ export interface IPokemonRawResponse {
   results: Array<any>;
 }
 
-interface IEvolutionChain { 
+interface IEvolutionChain {
   url: string;
 }
 

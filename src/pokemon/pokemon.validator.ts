@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
-import { ApiProperty, ApiQuery } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PokemonQueryParams {
   @ApiProperty({
@@ -18,14 +18,14 @@ export class PokemonQueryParams {
 
   @ApiProperty({
     description: 'The type of pokemon.',
-    required: false
+    required: false,
   })
   @IsOptional()
   type: string;
 
   @ApiProperty({
     description: 'The number of evolutions of pokemon.',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsNumber()

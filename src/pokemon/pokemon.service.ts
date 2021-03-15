@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { fetchData, isArrayWithNonZeroLength } from './pokemon.utils';
 import {
   IPokemonResponse,
@@ -54,62 +54,72 @@ export class PokemonService {
   }
 
   async getPokemon(limit, offset, type, noOfEvolutions): Promise<IPokemonResponse> {
-    const { next, previous, results } = await this.getPokemonGeneric(limit, offset);
-    const evolutionData = {};
-    let detailedResults: Array<IDetailedResult> = await Promise.all(
-      results.map(
-        async ({ url: pokemonDetailUrl }): Promise<IDetailedResult> => {
-          const {
-            name,
-            id,
-            types: typesRaw,
-            sprites: {
-              other: {
-                'official-artwork': { front_default: imageUrl },
+    try {
+      const { next, previous, results } = await this.getPokemonGeneric(limit, offset);
+      const evolutionData = {};
+      let detailedResults: Array<IDetailedResult> = await Promise.all(
+        results.map(
+          async ({ url: pokemonDetailUrl }): Promise<IDetailedResult> => {
+            const {
+              name,
+              id,
+              types: typesRaw,
+              sprites: {
+                other: {
+                  'official-artwork': { front_default: imageUrl },
+                },
               },
-            },
-          } = await fetchData(pokemonDetailUrl);
-          const types = typesRaw.map(({ type: { name } }) => name);
-          
-          // Filter based on given types.
-          if (type && !types.includes(type)) { 
-            return null;
-          }
+            } = await fetchData(pokemonDetailUrl);
+            const types = typesRaw.map(({ type: { name } }) => name);
 
-          const {
-            evolution_chain: { url: evolutionChainUrl },
-          } = await this.getPokemonSpecies(id);
+            // Filter based on given types.
+            if (type && !types.includes(type)) {
+              return null;
+            }
 
-          if (!evolutionData[evolutionChainUrl]) {
-            const { chain } = await fetchData(evolutionChainUrl);
-            // Save result in memory to avoid re-fetching.
-            evolutionData[evolutionChainUrl] = this.getEvolutionSequence(chain);
-          }
+            const {
+              evolution_chain: { url: evolutionChainUrl },
+            } = await this.getPokemonSpecies(id);
 
-          // Extract from memory if evolution-chain request is already made once.
-          const evolutionSequence = evolutionData[evolutionChainUrl];
-          const numberOfEvolutions = this.getNumberOfEvolutions(evolutionSequence, name);
+            if (!evolutionData[evolutionChainUrl]) {
+              const { chain } = await fetchData(evolutionChainUrl);
+              // Save result in memory to avoid re-fetching.
+              evolutionData[evolutionChainUrl] = this.getEvolutionSequence(chain);
+            }
 
-          // Filter based on number of evolutions.
-          if (noOfEvolutions != undefined && noOfEvolutions !== numberOfEvolutions) {
-            return null;
-          }
+            // Extract from memory if evolution-chain request is already made once.
+            const evolutionSequence = evolutionData[evolutionChainUrl];
+            const numberOfEvolutions = this.getNumberOfEvolutions(evolutionSequence, name);
 
-          return {
-            name,
-            id,
-            types,
-            imageUrl,
-            evolutionSequence,
-            numberOfEvolutions,
-          };
+            // Filter based on number of evolutions.
+            if (noOfEvolutions != undefined && noOfEvolutions !== numberOfEvolutions) {
+              return null;
+            }
+
+            return {
+              name,
+              id,
+              types,
+              imageUrl,
+              evolutionSequence,
+              numberOfEvolutions,
+            };
+          },
+        ),
+      );
+
+      // Filter results for null values.
+      detailedResults = detailedResults.filter(Boolean);
+
+      return { next, previous, detailedResults };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error?.message || 'Internal server error',
         },
-      ),
-    );
-  
-    // Filter results for null values.
-    detailedResults = detailedResults.filter(Boolean);
-
-    return { next, previous, detailedResults };
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

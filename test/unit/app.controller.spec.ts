@@ -16,9 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Your nest.js service is running ⚙ 🤙🏽"', () => {
-      expect(appController.getStatus()).toBe(
-        'Your nest.js service is running ⚙ 🤙🏽',
-      );
+      expect(appController.getStatus()).toBe('Your nest.js service is running ⚙ 🤙🏽');
     });
   });
 });
