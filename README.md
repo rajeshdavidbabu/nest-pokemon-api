@@ -39,6 +39,30 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## API Documentation (Swagger)
+
+```bash
+# start the service locally and visit to try out the APIs.
+http://localhost:8080/api
+
+```
+
+## Building and running in local docker environment
+
+A local docker installation is required.
+
+```bash
+# docker build
+$ docker build -t nest-pokemon-api .
+
+# docker run
+# 8080 - PORT from your local .env file
+# 7889 - Random PORT we use to expose it to public
+# Application can be accessed on http://localhost:7889/api
+
+$ docker run -p 7889:8080 --env-file .env -d nest-pokemon-api
+```
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
