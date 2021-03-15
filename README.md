@@ -1,3 +1,8 @@
+<p align="center">
+  <a target="blank"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" width="320" alt="Pokemon Logo" /></a>
+</p>
+
+
 ## Description
 
 A Nest.js based node web-server to retrieve pokemon information.
