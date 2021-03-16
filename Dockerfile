@@ -5,11 +5,13 @@ FROM node:12 AS builder
 WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY package*.json /app/
 
 # Install app dependencies
 RUN npm install
-COPY . .
+
+# Copy other project files required for build
+COPY . /app
 
 # Run build
 RUN npm run build
