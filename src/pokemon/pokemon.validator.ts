@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PokemonQueryParams {
@@ -7,6 +7,7 @@ export class PokemonQueryParams {
   })
   @IsNotEmpty()
   @IsNumber()
+  @Max(20)
   limit: number;
 
   @ApiProperty({

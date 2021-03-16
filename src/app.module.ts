@@ -16,9 +16,11 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
       }),
     }),
     // Basic inmemory caching based on the request-urls.
-    CacheModule.register({
-      ttl: 30,
-      max: 100,
+    CacheModule.registerAsync({
+      useFactory: () => ({
+        ttl: Number(process.env.CACHE_TTL),
+        max: Number(process.env.CACHE_MAX_ITEMS),
+      }),
     }),
   ],
   controllers: [AppController],
